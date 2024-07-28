@@ -5,6 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// INTERFACES
 export interface Person {
   name: string;
   expense: number;
@@ -32,7 +33,7 @@ export interface ExpenseResult {
 export interface FormProps {
   people: Person[];
   setPeople: (people: Person[]) => void;
-  calculate: () => void;
+  calculate: (number: number) => void;
 }
 
 export interface ResultProps {
@@ -40,11 +41,11 @@ export interface ResultProps {
   setResult: (arg0: any) => void;
 }
 
-export const emptyForm = [
-  { name: '', expense: 0 },
-  { name: '', expense: 0 },
-];
+// CONSTS
 
+export const emptyForm = [{ name: '', expense: 0 }];
+
+// LOGIC BUSINESS
 // ✅
 export function calculateTotalExpense(people: Person[]): number {
   return people.reduce((total, person) => total + person.expense, 0);
@@ -97,11 +98,15 @@ export function assignPayments(balances: Balance[]): Payment[] {
   return payments;
 }
 
-export function calculateExpenses(people: Person[]): ExpenseResult {
+// ✅
+export function calculateExpenses(people: Person[], additionalPeople: number): ExpenseResult {
   const totalExpense = calculateTotalExpense(people);
-  const numberOfPeople = people.length;
+  const numberOfPeople = people.length + additionalPeople;
   const perPersonExpense = calculatePerPersonExpense(totalExpense, numberOfPeople);
-  const balances = calculateBalances(people, perPersonExpense);
+
+  const allPeople = [...people, ...Array(additionalPeople).fill({ name: 'Anónimo', expense: 0 })];
+
+  const balances = calculateBalances(allPeople, perPersonExpense);
   const payments = assignPayments(balances);
 
   return {
@@ -113,6 +118,7 @@ export function calculateExpenses(people: Person[]): ExpenseResult {
   };
 }
 
+// UI UTILS
 export const formattedAmount = (amount: number) => {
   return new Intl.NumberFormat('es-AR', {
     style: 'currency',
@@ -121,4 +127,34 @@ export const formattedAmount = (amount: number) => {
   }).format(amount);
 };
 
+export const maskAmount = (value: string) => {
+  const cleanedValue = value.replace(/[^\d.]/g, '');
+  if (!cleanedValue) return '';
+  const [integerPart, decimalPart] = cleanedValue.split('.');
+  const formattedIntegerPart =
+    integerPart === '0'
+      ? '0'
+      : integerPart.replace(/^0+/, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  let formattedValue = formattedIntegerPart;
+
+  if (decimalPart !== undefined) {
+    formattedValue += `.${decimalPart}`;
+  }
+
+  formattedValue = `$${formattedValue}`;
+
+  return formattedValue;
+};
+
 export const toCapitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
+
+// FORM VALIDATIOS
+
+export const validateInput = (people: Person[]): boolean => {
+  return people.every((person) => person.name.trim() !== '' && person.expense !== 0);
+};
+
+export const validateTotalPeople = (totalPeople: number): boolean => {
+  return totalPeople > 1;
+};
