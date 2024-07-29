@@ -1,0 +1,42 @@
+{
+  "ResultsComponent": {
+    "orderizky": "Orderizky",
+    "date": "Fecha",
+    "orderDetails": "Detalles del Pedido",
+    "totalExpense": "Gasto Total",
+    "totalParticipants": "Participantes Totales",
+    "totalPerParticipant": "Total por Participante",
+    "balances": "Balances",
+    "dividizky": "Dividizky",
+    "paymentDetails": "le paga a",
+    "anonymousPayment": "Aquellos que no pagaron deben pagar a",
+    "clearButton": "Limpiar",
+    "shareButton": "Compartir",
+    "generateWhatsAppMessage": {
+      "orderizky": "📋 *Orderizky*",
+      "date": "📅 *Fecha:*",
+      "orderDetails": "📋 *Detalles del Pedido*",
+      "totalExpense": "💰 *Gasto Total:*",
+      "totalParticipants": "👥 *Participantes Totales:*",
+      "totalPerParticipant": "💵 *Total por Participante:*",
+      "balances": "📊 *Balances*",
+      "paymentDetails": "➡️ *Pagos*",
+      "paymentDetails2": "le paga a",
+      "anonymousPayment": "👤 *Aquellos que no pagaron deben pagar a*"
+    }
+  },
+  "FormComponent": {
+    "dividizkyTitle": "Dividizky",
+    "cardDescription": "Calcula los gastos compartidos fácilmente.",
+    "namePlaceholder": "Nombre",
+    "expensePlaceholder": "Gasto",
+    "addPersonButton": "Agregar Persona",
+    "personNotPayLabel": "Número de participantes que no pagaron:",
+    "errors": {
+      "fillFields": "Por favor, completa todos los campos antes de agregar una persona",
+      "validateInput": "Por favor, asegúrate de que haya al menos una persona que pague y un total de al menos dos participantes."
+    },
+    "clearButton": "Limpiar",
+    "calculateButton": "Calcular"
+  }
+}

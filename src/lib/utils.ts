@@ -41,6 +41,10 @@ export interface ResultProps {
   setResult: (arg0: any) => void;
 }
 
+export type Locale = (typeof locales)[number];
+export const locales = ['en', 'de'] as const;
+export const defaultLocale: Locale = 'en';
+
 // CONSTS
 
 export const emptyForm = [{ name: '', expense: 0 }];
@@ -157,4 +161,46 @@ export const validateInput = (people: Person[]): boolean => {
 
 export const validateTotalPeople = (totalPeople: number): boolean => {
   return totalPeople > 1;
+};
+
+// SHARE BTN
+export const generateWhatsAppMessage = (result: ExpenseResult, t: any) => {
+  const lineSeparator = '\n';
+
+  let orderDetails =
+    `${t.orderizky}\n${t.date} ${new Date().toLocaleDateString()}${lineSeparator}${lineSeparator}` +
+    `${t.orderDetails}${lineSeparator}` +
+    `${t.totalExpense} ${formattedAmount(result.totalExpense)}${lineSeparator}` +
+    `${t.totalParticipants} ${result.numberOfPeople}${lineSeparator}` +
+    `${t.totalPerParticipant} ${formattedAmount(
+      result.perPersonExpense
+    )}${lineSeparator}${lineSeparator}` +
+    `${t.balances}${lineSeparator}` +
+    result.balances
+      .filter((balance) => balance.name !== 'Anónimo')
+      .map(
+        (balance) =>
+          `${toCapitalize(balance.name)}: ${balance.balance >= 0 ? '+' : '-'}${formattedAmount(
+            Math.abs(balance.balance)
+          )}`
+      )
+      .join(lineSeparator) +
+    `${lineSeparator}${lineSeparator}${t.paymentDetails}${lineSeparator}` +
+    result.payments
+      .filter((payment) => payment.from !== 'Anónimo')
+      .map(
+        (payment) =>
+          `➡️ ${toCapitalize(payment.from)} ${t.paymentDetails2} ${toCapitalize(
+            payment.to
+          )} ${formattedAmount(payment.amount)}`
+      )
+      .join(lineSeparator);
+
+  if (result.payments.some((payment) => payment.from === 'Anónimo')) {
+    orderDetails += `${lineSeparator}${lineSeparator}${t.anonymousPayment} *_${toCapitalize(
+      result.payments[0].to
+    )}_ ${formattedAmount(result.perPersonExpense)}*`;
+  }
+
+  return orderDetails;
 };

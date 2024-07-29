@@ -5,19 +5,22 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Divide, PersonStanding, Trash } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { useTranslations } from 'next-intl';
 
 export default function Form({ people, setPeople, calculate }: FormProps) {
   const [additionalPeople, setAdditionalPeople] = useState<number>(0);
   const [errors, setErrors] = useState<string[]>([]);
+
+  const t = useTranslations('FormComponent');
 
   const handleAddPerson = useCallback(() => {
     if (validateInput(people)) {
       setPeople([...people, { name: '', expense: 0 }]);
       setErrors([]);
     } else {
-      setErrors(['Please fill all the fields before adding a person']);
+      setErrors([t('errors.fillFields')]);
     }
-  }, [people, setPeople]);
+  }, [people, setPeople, t]);
 
   const handleRemovePerson = useCallback(
     (index: number) => {
@@ -57,27 +60,25 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
       calculate(additionalPeople);
       setErrors([]);
     } else {
-      setErrors([
-        'Por favor, asegúrese de que haya al menos una persona que haya pagado y un total de al menos dos personas.',
-      ]);
+      setErrors([t('errors.validateInput')]);
     }
-  }, [people, additionalPeople, calculate]);
+  }, [people, additionalPeople, calculate, t]);
 
   return (
     <Card className='w-[500px]'>
       <CardHeader>
-        <div className='flex items-center justify-start gap-2 mb-4'>
-          <CardTitle className='text-2xl font-bold '>Dividizky</CardTitle>
+        <div className='flex items-center justify-start gap-2 mb-2'>
+          <CardTitle className='text-2xl font-bold '>{t('dividizkyTitle')}</CardTitle>
           <Divide className='h-8 w-8 -rotate-45 text-primary' />
         </div>
-        <CardDescription>Deploy your new project in one-click.</CardDescription>
+        <CardDescription>{t('cardDescription')}</CardDescription>
       </CardHeader>
       <CardContent className='space-y-4'>
         {people.map((person, index) => (
           <div key={index} className='flex gap-4'>
             <Input
               type='text'
-              placeholder='Nombre'
+              placeholder={t('namePlaceholder')}
               autoComplete='false'
               value={person.name}
               onChange={(e) => handleChange(index, 'name', e.target.value)}
@@ -85,7 +86,7 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
             />
             <Input
               type='number'
-              placeholder='Gasto'
+              placeholder={t('expensePlaceholder')}
               autoComplete='false'
               value={person.expense}
               onChange={(e) => handleChange(index, 'expense', parseFloat(e.target.value))}
@@ -97,12 +98,12 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
           </div>
         ))}
         {errors.map((error, i) => (
-          <span key={i} className='text-red-500 text-xs px-1'>
+          <span key={i} className='text-red-500 text-xs text-wrap'>
             {error}
           </span>
         ))}
         <div className='flex items-center justify-between gap-4'>
-          <Label className='w-2/3'>Person that does not pay:</Label>
+          <Label className='w-2/3'>{t('personNotPayLabel')}</Label>
           <Input
             type='number'
             autoComplete='false'
@@ -113,14 +114,14 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
           <PersonStanding className='mx-1 h-6 w-6' />
         </div>
         <Button onClick={handleAddPerson} variant='outline' className='w-full mt-12'>
-          + Agregar Persona
+          + {t('addPersonButton')}
         </Button>
       </CardContent>
       <CardFooter className='flex justify-between'>
         <Button variant='destructive' onClick={handleRemoveAll}>
-          Clear
+          {t('clearButton')}
         </Button>
-        <Button onClick={handleCalculate}>Calcular</Button>
+        <Button onClick={handleCalculate}>{t('calculateButton')}</Button>
       </CardFooter>
     </Card>
   );

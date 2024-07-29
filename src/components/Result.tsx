@@ -9,42 +9,66 @@ import {
 } from '@/components/ui/card';
 
 import { Separator } from '@/components/ui/separator';
-import { formattedAmount, ResultProps, toCapitalize } from '@/lib/utils';
+import { formattedAmount, generateWhatsAppMessage, ResultProps, toCapitalize } from '@/lib/utils';
 import { CircleDollarSign, CircleUser, PersonStanding } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const Results = ({ result, setResult }: ResultProps) => {
+  const t = useTranslations('ResultsComponent');
+  const whatsappTexts = {
+    orderizky: t('generateWhatsAppMessage.orderizky'),
+    date: t('generateWhatsAppMessage.date'),
+    orderDetails: t('generateWhatsAppMessage.orderDetails'),
+    totalExpense: t('generateWhatsAppMessage.totalExpense'),
+    totalParticipants: t('generateWhatsAppMessage.totalParticipants'),
+    totalPerParticipant: t('generateWhatsAppMessage.totalPerParticipant'),
+    balances: t('generateWhatsAppMessage.balances'),
+    paymentDetails: t('generateWhatsAppMessage.paymentDetails'),
+    paymentDetails2: t('generateWhatsAppMessage.paymentDetails2'),
+    anonymousPayment: t('generateWhatsAppMessage.anonymousPayment'),
+  };
+
   if (!result) return null;
+
   const anonymousPayments = result.payments.filter((payment) => payment.from === 'Anónimo');
 
   const details = [
     {
       icon: <CircleDollarSign className='h-4 w-4' />,
-      title: 'Total Expense',
+      title: t('totalExpense'),
       value: formattedAmount(result.totalExpense),
     },
     {
       icon: <CircleUser className='h-4 w-4' />,
-      title: 'Total participants',
+      title: t('totalParticipants'),
       value: result.numberOfPeople,
     },
     {
       icon: <PersonStanding className='h-4 w-4' />,
-      title: 'Total per participant',
+      title: t('totalPerParticipant'),
       value: formattedAmount(result.perPersonExpense),
     },
   ];
+
+  const shareResults = () => {
+    const message = generateWhatsAppMessage(result, whatsappTexts);
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  };
 
   return (
     <Card className='overflow-hidden w-96 border-dashed border-2 shadow-none'>
       <CardHeader className='flex flex-row items-start bg-muted/50'>
         <div className='grid gap-0.5'>
-          <CardTitle className='group flex items-center gap-2 text-lg'>Orderizky</CardTitle>
-          <CardDescription>Date: {new Date().toLocaleDateString()}</CardDescription>
+          <CardTitle className='group flex items-center gap-2 text-lg'>{t('orderizky')}</CardTitle>
+          <CardDescription>
+            {t('date')}: {new Date().toLocaleDateString()}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className='p-6 text-sm'>
         <div className='grid gap-3'>
-          <div className='font-semibold'>Order Details</div>
+          <div className='font-semibold'>{t('orderDetails')}</div>
           <ul className='grid gap-3'>
             {details.map((detail) => (
               <li key={detail.title} className='flex items-center justify-between'>
@@ -83,15 +107,15 @@ const Results = ({ result, setResult }: ResultProps) => {
               .map((payment, index) => (
                 <li key={index} className='flex justify-between text-muted-foreground'>
                   <span>
-                    {toCapitalize(payment.from)} le paga a {toCapitalize(payment.to)}
+                    {toCapitalize(payment.from)} {t('paymentDetails')} {toCapitalize(payment.to)}
                   </span>
                   <span className='font-semibold'>{formattedAmount(payment.amount)}</span>
                 </li>
               ))}
             {anonymousPayments.length > 0 && (
               <li className='flex justify-between text-muted-foreground'>
-                <span>
-                  Los que no pagaron tienen que pagar a {toCapitalize(anonymousPayments[0].to)}
+                <span className='w-2/3'>
+                  {t('anonymousPayment')} {toCapitalize(anonymousPayments[0].to)}
                 </span>
                 <span className='font-semibold'>{formattedAmount(result.perPersonExpense)}</span>
               </li>
@@ -101,10 +125,10 @@ const Results = ({ result, setResult }: ResultProps) => {
       </CardContent>
       <CardFooter className='flex justify-between items-center border-t bg-muted/50 px-6 py-3'>
         <Button onClick={() => setResult(null)} variant='destructive'>
-          Clear
+          {t('clearButton')}
         </Button>
-        <Button onClick={() => console.log('hola')} variant='default'>
-          Share
+        <Button onClick={shareResults} variant='default'>
+          {t('shareButton')}
         </Button>
       </CardFooter>
     </Card>
