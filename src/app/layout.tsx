@@ -16,7 +16,15 @@ export const metadata: Metadata = {
     'App to easily and fairly calculate how to divide expenses between a group of people',
   applicationName: 'Dividizky',
   authors: [{ name: 'Izky', url: 'https://izky.dev/' }],
-  keywords: ['Calculadora de Gastos', 'División de Gastos', 'Calculadora Justa'],
+  keywords: [
+    'Expense Splitter',
+    'Fair Expense Calculator',
+    'Group Expense Management',
+    'Shared Expenses Calculator',
+    'Cost Splitting Tool',
+    'Expense Sharing App',
+    'Expense Division App',
+  ],
   robots: {
     index: false,
     follow: true,
