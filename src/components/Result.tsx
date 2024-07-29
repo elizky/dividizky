@@ -14,8 +14,7 @@ import { CircleDollarSign, CircleUser, PersonStanding } from 'lucide-react';
 
 const Results = ({ result, setResult }: ResultProps) => {
   if (!result) return null;
-
-  console.log('result', result);
+  const anonymousPayments = result.payments.filter((payment) => payment.from === 'Anónimo');
 
   const details = [
     {
@@ -59,33 +58,44 @@ const Results = ({ result, setResult }: ResultProps) => {
           </ul>
           <Separator className='my-2' />
           <ul className='grid gap-3'>
-            {result.balances.map((balance, index) => (
-              <li key={index} className='flex items-center justify-between'>
-                <span className='text-muted-foreground'>{toCapitalize(balance.name)}</span>
-                {balance.balance >= 0 ? (
-                  <span className='text-green-500'>{formattedAmount(balance.balance)}</span>
-                ) : (
-                  <span className='text-destructive'>
-                    {formattedAmount(Math.abs(balance.balance))}
-                  </span>
-                )}
-              </li>
-            ))}
+            {result.balances
+              .filter((balance) => balance.name !== 'Anónimo')
+              .map((balance, index) => (
+                <li key={index} className='flex items-center justify-between'>
+                  <span className='text-muted-foreground'>{toCapitalize(balance.name)}</span>
+                  {balance.balance >= 0 ? (
+                    <span className='text-green-500'>{formattedAmount(balance.balance)}</span>
+                  ) : (
+                    <span className='text-destructive'>
+                      {formattedAmount(Math.abs(balance.balance))}
+                    </span>
+                  )}
+                </li>
+              ))}
           </ul>
         </div>
         <Separator className='my-4' />
         <div className='grid gap-3'>
           <div className='font-semibold'>Dividizky</div>
-
           <ul className='grid gap-2'>
-            {result.payments.map((payment, index) => (
-              <li key={index} className='flex justify-between text-muted-foreground'>
+            {result.payments
+              .filter((payment) => payment.from !== 'Anónimo')
+              .map((payment, index) => (
+                <li key={index} className='flex justify-between text-muted-foreground'>
+                  <span>
+                    {toCapitalize(payment.from)} le paga a {toCapitalize(payment.to)}
+                  </span>
+                  <span className='font-semibold'>{formattedAmount(payment.amount)}</span>
+                </li>
+              ))}
+            {anonymousPayments.length > 0 && (
+              <li className='flex justify-between text-muted-foreground'>
                 <span>
-                  {toCapitalize(payment.from)} le paga a {toCapitalize(payment.to)}
+                  Los que no pagaron tienen que pagar a {toCapitalize(anonymousPayments[0].to)}
                 </span>
-                <span className='font-semibold'>{formattedAmount(payment.amount)}</span>
+                <span className='font-semibold'>{formattedAmount(result.perPersonExpense)}</span>
               </li>
-            ))}
+            )}
           </ul>
         </div>
       </CardContent>
@@ -93,7 +103,7 @@ const Results = ({ result, setResult }: ResultProps) => {
         <Button onClick={() => setResult(null)} variant='destructive'>
           Clear
         </Button>
-        <Button onClick={() => console.log('hola')} variant='outline'>
+        <Button onClick={() => console.log('hola')} variant='default'>
           Share
         </Button>
       </CardFooter>

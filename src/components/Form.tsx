@@ -68,7 +68,7 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
       <CardHeader>
         <div className='flex items-center justify-start gap-2 mb-4'>
           <CardTitle className='text-2xl font-bold '>Dividizky</CardTitle>
-          <Divide className='h-6 w-6 -rotate-45 text-destructive' />
+          <Divide className='h-8 w-8 -rotate-45 text-primary' />
         </div>
         <CardDescription>Deploy your new project in one-click.</CardDescription>
       </CardHeader>
@@ -78,13 +78,15 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
             <Input
               type='text'
               placeholder='Nombre'
+              autoComplete='false'
               value={person.name}
               onChange={(e) => handleChange(index, 'name', e.target.value)}
               className='w-2/3'
             />
             <Input
-              type='tel'
+              type='number'
               placeholder='Gasto'
+              autoComplete='false'
               value={person.expense}
               onChange={(e) => handleChange(index, 'expense', parseFloat(e.target.value))}
               className='w-1/3'
@@ -102,7 +104,8 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
         <div className='flex items-center justify-between gap-4'>
           <Label className='w-2/3'>Person that does not pay:</Label>
           <Input
-            type='tel'
+            type='number'
+            autoComplete='false'
             value={additionalPeople}
             onChange={(e) => handleAdditionalPeopleChange(parseInt(e.target.value))}
             className='w-1/3'
