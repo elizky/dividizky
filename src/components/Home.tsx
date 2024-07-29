@@ -17,7 +17,7 @@ export default function HomeComponent() {
   );
 
   return (
-    <main className='flex min-h-screen flex-col items-center justify-center p-24'>
+    <main className='flex min-h-screen flex-col items-center justify-center sm:p-24'>
       {result ? (
         <Results result={result} setResult={setResult} />
       ) : (

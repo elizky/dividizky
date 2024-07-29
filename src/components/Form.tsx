@@ -65,9 +65,9 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
   }, [people, additionalPeople, calculate, t]);
 
   return (
-    <Card className='w-[500px]'>
-      <CardHeader>
-        <div className='flex items-center justify-start gap-2 mb-2'>
+    <Card className='w-[300px] sm:w-[500px]'>
+      <CardHeader className='text-center sm:text-left'>
+        <div className='flex items-center justify-center sm:justify-start gap-2 mb-2'>
           <CardTitle className='text-2xl font-bold '>{t('dividizkyTitle')}</CardTitle>
           <Divide className='h-8 w-8 -rotate-45 text-primary' />
         </div>
@@ -75,7 +75,7 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
       </CardHeader>
       <CardContent className='space-y-4'>
         {people.map((person, index) => (
-          <div key={index} className='flex gap-4'>
+          <div key={index} className='flex gap-1 sm:gap-4'>
             <Input
               type='text'
               placeholder={t('namePlaceholder')}
@@ -102,7 +102,7 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
             {error}
           </span>
         ))}
-        <div className='flex items-center justify-between gap-4'>
+        <div className='flex items-center justify-between gap-1 sm:gap-4'>
           <Label className='w-2/3'>{t('personNotPayLabel')}</Label>
           <Input
             type='number'
@@ -113,7 +113,7 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
           />
           <PersonStanding className='mx-1 h-6 w-6' />
         </div>
-        <Button onClick={handleAddPerson} variant='outline' className='w-full mt-12'>
+        <Button onClick={handleAddPerson} variant='outline' className='w-full !mt-8 sm:mt-12 '>
           + {t('addPersonButton')}
         </Button>
       </CardContent>
