@@ -38,6 +38,7 @@ export interface FormProps {
 
 export interface ResultProps {
   result: ExpenseResult | null;
+  setPeople: (people: Person[]) => void;
   setResult: (arg0: any) => void;
 }
 

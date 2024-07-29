@@ -19,7 +19,7 @@ export default function HomeComponent() {
   return (
     <main className='flex min-h-screen flex-col items-center justify-center sm:p-24'>
       {result ? (
-        <Results result={result} setResult={setResult} />
+        <Results result={result} setResult={setResult} setPeople={setPeople}/>
       ) : (
         <FormComponent people={people} setPeople={setPeople} calculate={calculate} />
       )}

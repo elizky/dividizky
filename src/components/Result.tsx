@@ -9,11 +9,17 @@ import {
 } from '@/components/ui/card';
 
 import { Separator } from '@/components/ui/separator';
-import { formattedAmount, generateWhatsAppMessage, ResultProps, toCapitalize } from '@/lib/utils';
+import {
+  emptyForm,
+  formattedAmount,
+  generateWhatsAppMessage,
+  ResultProps,
+  toCapitalize,
+} from '@/lib/utils';
 import { CircleDollarSign, CircleUser, PersonStanding } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const Results = ({ result, setResult }: ResultProps) => {
+const Results = ({ result, setResult, setPeople }: ResultProps) => {
   const t = useTranslations('ResultsComponent');
   const whatsappTexts = {
     orderizky: t('generateWhatsAppMessage.orderizky'),
@@ -50,6 +56,11 @@ const Results = ({ result, setResult }: ResultProps) => {
     },
   ];
 
+  const handleClear = () => {
+    setPeople(emptyForm);
+    setResult(null);
+  };
+
   const shareResults = () => {
     const message = generateWhatsAppMessage(result, whatsappTexts);
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
@@ -57,7 +68,7 @@ const Results = ({ result, setResult }: ResultProps) => {
   };
 
   return (
-    <Card className='overflow-hidden w-96 border-dashed border-2 shadow-none'>
+    <Card className='overflow-hidden border-dashed border-2 shadow-none w-[300px] sm:w-96 '>
       <CardHeader className='flex flex-row items-start bg-muted/50'>
         <div className='grid gap-0.5'>
           <CardTitle className='group flex items-center gap-2 text-lg'>{t('orderizky')}</CardTitle>
@@ -124,7 +135,7 @@ const Results = ({ result, setResult }: ResultProps) => {
         </div>
       </CardContent>
       <CardFooter className='flex justify-between items-center border-t bg-muted/50 px-6 py-3'>
-        <Button onClick={() => setResult(null)} variant='destructive'>
+        <Button onClick={handleClear} variant='destructive'>
           {t('clearButton')}
         </Button>
         <Button onClick={shareResults} variant='default'>
