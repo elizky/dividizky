@@ -34,7 +34,7 @@
     "personNotPayLabel": "Number of non-paying participants:",
     "errors": {
       "fillFields": "Please fill all the fields before adding a person",
-      "validateInput": "Please ensure there is at least one paying person and a total of at least two participants."
+      "minimumPeople": "Please ensure there is at least one paying person and a total of at least two participants."
     },
     "clearButton": "Clear",
     "calculateButton": "Calculate"

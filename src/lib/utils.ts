@@ -34,13 +34,18 @@ export interface ExpenseResult {
 export interface FormProps {
   people: Person[];
   setPeople: (people: Person[]) => void;
-  calculate: (number: number) => void;
+  calculate: (FormValues: FormValues) => void;
 }
 
 export interface ResultProps {
   result: ExpenseResult | null;
   setPeople: (people: Person[]) => void;
   setResult: (arg0: any) => void;
+}
+
+export interface FormValues {
+  people: Person[];
+  additionalPeople: number;
 }
 
 export type Locale = (typeof locales)[number];
@@ -50,6 +55,25 @@ export const defaultLocale: Locale = 'es';
 // CONSTS
 
 export const emptyForm = [{ name: '', expense: 0 }];
+
+// FORM SCHEMA
+export const getFormSchema = () => {
+  return z.object({
+    people: z.array(
+      z.object({
+        name: z.string().trim().min(1, { message: 'Must enter something' }).max(100),
+        expense: z.coerce
+          .number({
+            required_error: 'Is required',
+          })
+          .positive({
+            message: 'Please enter a number bigger than 0 ',
+          }),
+      })
+    ),
+    additionalPeople: z.coerce.number().min(0, 'Must be a positive number'),
+  });
+};
 
 // LOGIC BUSINESS
 // ✅
@@ -105,7 +129,7 @@ export function assignPayments(balances: Balance[]): Payment[] {
 }
 
 // ✅
-export function calculateExpenses(people: Person[], additionalPeople: number): ExpenseResult {
+export function calculateExpenses({ people, additionalPeople }: FormValues): ExpenseResult {
   const totalExpense = calculateTotalExpense(people);
   const numberOfPeople = people.length + additionalPeople;
   const perPersonExpense = calculatePerPersonExpense(totalExpense, numberOfPeople);
@@ -155,25 +179,6 @@ export const maskAmount = (value: string) => {
 
 export const toCapitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
 
-// FORM VALIDATIOS
-
-export const validateInput = (people: Person[]): boolean => {
-  return people.every((person) => person.name.trim() !== '' && person.expense !== 0);
-};
-
-export const validateTotalPeople = (totalPeople: number): boolean => {
-  return totalPeople > 1;
-};
-
-export const personSchema = z.object({
-  name: z.string().min(1, 'El nombre es obligatorio'),
-  expense: z.number().min(0, 'El gasto debe ser un número positivo'),
-});
-
-export const formSchema = z.object({
-  people: z.array(personSchema),
-  additionalPeople: z.number().min(0, 'El número de personas adicionales no puede ser negativo'),
-});
 // SHARE BTN
 export const generateWhatsAppMessage = (result: ExpenseResult, t: any) => {
   const lineSeparator = '\n';
@@ -214,4 +219,8 @@ export const generateWhatsAppMessage = (result: ExpenseResult, t: any) => {
   }
 
   return orderDetails;
+};
+
+export const validateInput = (people: Person[]): boolean => {
+  return people.every((person) => person.name.trim() !== '' && person.expense !== 0);
 };

@@ -1,68 +1,89 @@
-import { useState, useCallback } from 'react';
-import { emptyForm, FormProps, Person, validateInput, validateTotalPeople } from '@/lib/utils';
+'use client';
+import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Divide, PersonStanding, Trash } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { Divide, PersonStanding, Trash } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { useTranslations } from 'next-intl';
+import { emptyForm, FormProps, getFormSchema, validateInput } from '@/lib/utils';
 
-export default function Form({ people, setPeople, calculate }: FormProps) {
-  const [additionalPeople, setAdditionalPeople] = useState<number>(0);
-  const [errors, setErrors] = useState<string[]>([]);
-
+export default function FormComponent({ people, setPeople, calculate }: FormProps) {
   const t = useTranslations('FormComponent');
+  const formSchema = getFormSchema();
 
-  const handleAddPerson = useCallback(() => {
-    if (validateInput(people)) {
-      setPeople([...people, { name: '', expense: 0 }]);
-      setErrors([]);
-    } else {
-      setErrors([t('errors.fillFields')]);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      people,
+      additionalPeople: 0,
+    },
+  });
+
+  const peopleWatcher = form.watch('people');
+  console.log('peopleWatcher', peopleWatcher);
+  console.log('people', people);
+
+  const handleAddPerson = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (!validateInput(peopleWatcher)) {
+      form.setError('people', {
+        type: 'manual',
+        message: t('errors.fillFields'),
+      });
+      return;
     }
-  }, [people, setPeople, t]);
+    const newPeople = [...peopleWatcher, { name: '', expense: 0 }];
+    setPeople(newPeople);
+    form.setValue('people', newPeople);
+  };
 
-  const handleRemovePerson = useCallback(
-    (index: number) => {
-      if (people.length > 2 || additionalPeople > 1) {
-        const newPeople = people.filter((_, i) => i !== index);
-        setPeople(newPeople);
-      }
-    },
-    [people, additionalPeople, setPeople]
-  );
+  const handleRemovePerson = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
 
-  const handleRemoveAll = useCallback(() => {
-    setPeople(emptyForm);
-  }, [setPeople]);
-
-  const handleChange = useCallback(
-    (index: number, field: keyof Person, value: string | number) => {
-      const newPeople = [...people];
-      newPeople[index] = {
-        ...newPeople[index],
-        [field]: value,
-      };
+    if (people.length > 2) {
+      const newPeople = people.filter((_, i) => i !== index);
       setPeople(newPeople);
-      setErrors([]);
-    },
-    [people, setPeople]
-  );
 
-  const handleAdditionalPeopleChange = useCallback((value: string | number) => {
-    setAdditionalPeople(Number(value));
-  }, []);
+      // Actualiza el valor en react-hook-form
+      form.setValue('people', newPeople);
+    }
+  };
 
-  const handleCalculate = useCallback(() => {
+  const handleRemoveAll = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    // Reinicia el estado de people
+    setPeople(emptyForm);
+
+    // Actualiza el valor en react-hook-form
+    form.reset({
+      people: emptyForm,
+      additionalPeople: 0,
+    });
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { people, additionalPeople } = values;
     const totalPeople = people.length + additionalPeople;
 
-    if (validateInput(people) && validateTotalPeople(totalPeople)) {
-      calculate(additionalPeople);
-      setErrors([]);
+    if (totalPeople < 2) {
+      form.setError('additionalPeople', {
+        type: 'manual',
+        message: t('errors.minimumPeople'),
+      });
+      return;
     } else {
-      setErrors([t('errors.validateInput')]);
+      calculate(values);
     }
-  }, [people, additionalPeople, calculate, t]);
+  };
 
   return (
     <Card className='w-[300px] sm:w-[500px]'>
@@ -73,56 +94,73 @@ export default function Form({ people, setPeople, calculate }: FormProps) {
         </div>
         <CardDescription>{t('cardDescription')}</CardDescription>
       </CardHeader>
-      <CardContent className='space-y-4'>
-        {people.map((person, index) => (
-          <div key={index} className='flex gap-1 sm:gap-4'>
-            <Input
-              type='text'
-              placeholder={t('namePlaceholder')}
-              autoComplete='false'
-              value={person.name}
-              onChange={(e) => handleChange(index, 'name', e.target.value)}
-              className='w-2/3'
-            />
-            <Input
-              type='number'
-              placeholder={t('expensePlaceholder')}
-              autoComplete='false'
-              value={person.expense}
-              onChange={(e) => handleChange(index, 'expense', parseFloat(e.target.value))}
-              className='w-1/3'
-            />
-            <Button variant='outline' size='icon' onClick={() => handleRemovePerson(index)}>
-              <Trash className='h-4 w-4' />
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {peopleWatcher.map((_, index) => (
+              <div key={index} className='flex gap-1 sm:gap-4'>
+                <FormField
+                  control={form.control}
+                  name={`people.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem className='w-2/3'>
+                      <FormControl>
+                        <Input {...field} placeholder={t('namePlaceholder')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`people.${index}.expense`}
+                  render={({ field }) => (
+                    <FormItem className='w-1/3'>
+                      <FormControl>
+                        <Input {...field} type='tel' placeholder={t('expensePlaceholder')} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button variant='outline' size='icon' onClick={(e) => handleRemovePerson(index, e)}>
+                  <Trash className='h-4 w-4' />
+                </Button>
+              </div>
+            ))}
+            <div className='flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-4'>
+              <Label className='text-center sm:text-left sm:w-2/3'>{t('personNotPayLabel')}</Label>
+              <FormField
+                control={form.control}
+                name='additionalPeople'
+                render={({ field }) => (
+                  <FormItem className='w-full sm:w-1/3'>
+                    <FormControl>
+                      <Input {...field} type='tel' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <PersonStanding className='hidden sm:block sm:mx-1 h-6 w-6' />
+            </div>
+            <Button
+              onClick={(e) => handleAddPerson(e)}
+              variant='outline'
+              className=' w-full !mt-8 sm:mt-12 '
+            >
+              + {t('addPersonButton')}
             </Button>
-          </div>
-        ))}
-        {errors.map((error, i) => (
-          <span key={i} className='text-red-500 text-xs text-wrap'>
-            {error}
-          </span>
-        ))}
-        <div className='flex items-center justify-between gap-1 sm:gap-4'>
-          <Label className='w-2/3'>{t('personNotPayLabel')}</Label>
-          <Input
-            type='number'
-            autoComplete='false'
-            value={additionalPeople}
-            onChange={(e) => handleAdditionalPeopleChange(parseInt(e.target.value))}
-            className='w-1/3'
-          />
-          <PersonStanding className='mx-1 h-6 w-6' />
-        </div>
-        <Button onClick={handleAddPerson} variant='outline' className='w-full !mt-8 sm:mt-12 '>
-          + {t('addPersonButton')}
-        </Button>
+            <FormMessage>{form.formState.errors.people?.message}</FormMessage>
+            <CardFooter className='flex justify-between mt-4'>
+              <Button type='button' variant='destructive' onClick={(e) => handleRemoveAll(e)}>
+                {t('clearButton')}
+              </Button>
+              <Button type='submit'>{t('calculateButton')}</Button>
+            </CardFooter>
+          </form>
+        </Form>
       </CardContent>
-      <CardFooter className='flex justify-between'>
-        <Button variant='destructive' onClick={handleRemoveAll}>
-          {t('clearButton')}
-        </Button>
-        <Button onClick={handleCalculate}>{t('calculateButton')}</Button>
-      </CardFooter>
     </Card>
   );
 }
