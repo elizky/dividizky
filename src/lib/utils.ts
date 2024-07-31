@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { z } from 'zod';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -43,8 +44,8 @@ export interface ResultProps {
 }
 
 export type Locale = (typeof locales)[number];
-export const locales = ['en', 'de'] as const;
-export const defaultLocale: Locale = 'en';
+export const locales = ['en', 'es'] as const;
+export const defaultLocale: Locale = 'es';
 
 // CONSTS
 
@@ -164,6 +165,15 @@ export const validateTotalPeople = (totalPeople: number): boolean => {
   return totalPeople > 1;
 };
 
+export const personSchema = z.object({
+  name: z.string().min(1, 'El nombre es obligatorio'),
+  expense: z.number().min(0, 'El gasto debe ser un número positivo'),
+});
+
+export const formSchema = z.object({
+  people: z.array(personSchema),
+  additionalPeople: z.number().min(0, 'El número de personas adicionales no puede ser negativo'),
+});
 // SHARE BTN
 export const generateWhatsAppMessage = (result: ExpenseResult, t: any) => {
   const lineSeparator = '\n';

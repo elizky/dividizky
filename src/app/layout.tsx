@@ -8,7 +8,7 @@ import { ThemeProvider } from '@/lib/theme-provider';
 const jura = Jura({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dividizky.vercel.app/'),
+  metadataBase: new URL('https://dividizky.app'),
   title: {
     default: 'Dividizky',
     template: '%s | Dividizky',
@@ -26,24 +26,11 @@ export const metadata: Metadata = {
     'Expense Sharing App',
     'Expense Division App',
   ],
-  robots: {
-    index: false,
-    follow: true,
-    nocache: true,
-    googleBot: {
-      index: true,
-      follow: false,
-      noimageindex: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
   openGraph: {
     title: 'Dividizky',
     description:
       'App to easily and fairly calculate how to divide expenses between a group of people',
-    url: 'https://dividizky.vercel.app/',
+    url: 'https://dividizky.app',
     siteName: 'Dividizky',
     locale: 'es',
     type: 'website',
@@ -60,6 +47,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
+  console.log('locale', locale);
   const messages = await getMessages();
 
   return (
