@@ -38,5 +38,9 @@
     },
     "clearButton": "Limpiar",
     "calculateButton": "Calcular"
+  },
+  "Welcome": {
+    "createdBy": "Creado por ",
+    "izky": "Izky"
   }
 }

@@ -4,6 +4,7 @@ import './globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { ThemeProvider } from '@/lib/theme-provider';
+import Footer from '@/components/Footer';
 
 const jura = Jura({ subsets: ['latin'] });
 
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute='class' defaultTheme='dark' enableSystem>
             {children}
+            <Footer />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
