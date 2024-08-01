@@ -34,9 +34,13 @@
     "personNotPayLabel": "Número de participantes que no pagaron:",
     "errors": {
       "fillFields": "Por favor, completa todos los campos antes de agregar una persona",
-      "validateInput": "Por favor, asegúrate de que haya al menos una persona que pague y un total de al menos dos participantes."
+      "minimumPeople": "Por favor, asegúrate de que haya al menos una persona que pague y un total de al menos dos participantes."
     },
     "clearButton": "Limpiar",
     "calculateButton": "Calcular"
+  },
+  "Welcome": {
+    "createdBy": "Creado por ",
+    "izky": "Izky"
   }
 }
