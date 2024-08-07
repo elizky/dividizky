@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { ThemeProvider } from '@/lib/theme-provider';
 import Footer from '@/components/Footer';
+import Script from 'next/script';
 
 const jura = Jura({ subsets: ['latin'] });
 
@@ -53,12 +54,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <script
+      <Script
         async
         defer
         src='https://cloud.umami.is/script.js'
         data-website-id='b555fbdb-ec1e-4630-805d-7ea68d4266e9'
-      ></script>
+      />
+      <Script
+        async
+        src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7762587940973595'
+        crossOrigin='anonymous'
+      />
       <body className={jura.className}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute='class' defaultTheme='dark' enableSystem>
